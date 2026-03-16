@@ -3,11 +3,17 @@
 
 name: Build and deploy Node.js app to Azure Web App - CloudCampus-D782-WGU
 
+
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+env:
+  NODE_VERSION: 24
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 = true
 
 jobs:
   build:
