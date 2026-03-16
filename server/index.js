@@ -6,11 +6,11 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors({  origin: process.env.CLIENT_ORIGIN || '*' }));
+app.use(cors({  origin: process.env.CLIENT_ORIGIN || '*' })); // TODO: repalce '*' with front-end domain.
 
 app.get('/api/health', (req, res)=>{ res.json({ status: 'ok' }); });
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, ()=> { console.log(`Server listening on port ${'port'}` ); });
+app.listen(port, ()=> { console.log(`Server listening on port ${port}` ); });
 
