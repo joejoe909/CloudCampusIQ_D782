@@ -1,0 +1,130 @@
+name: CloudCampusIQ-MERN-Azure
+
+on: 
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions: 
+  contents: read
+  id-token: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_VERSION: '24'
+  RESOURCE_GROUP: rg-mern-Production
+  FRONTEND_APP_NAME: app-mern-frontend-cloudcampus-iq
+  BACKEND_APP_NAME: app-mern-backend-cloudcampus-iq
+  BACKEND_SLOT_NAME: staging
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install FRONTEND # dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Build FRONTEND
+        working-directory: ./client
+        run: npm run build
+
+      - name: Install BACKEND # dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Prepare FRONTEND # package
+        run: |
+          mkdir -p fe-package
+          cp -R client/dist/* fe-package/
+
+      - name: Prepare BACKEND # package
+        run: | 
+          mkdir -p be-package
+          rsync -av \
+            --exclude node_modules \
+            --exclude .git \
+            --exclude .github \
+            server/ be-package/
+
+      - name: Upload fe-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fe-build
+          path: fe-package
+
+      - name: Upload be-artifact
+        uses: actions/upload-artifact@v4
+        with: 
+          name: be-build
+          path: be-package
+
+  deploy_frontend:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download fe-artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fe-build
+          path: fe-package
+
+      - name: azure-login-w-oidc
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: deploy-fe
+        uses: azure/webapps-deploy@v3
+        with: 
+          app-name: ${{ env.FRONTEND_APP_NAME }}
+          package: fe-package
+      
+  deploy_backend:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps: 
+      - name: Download be-artifact
+        uses: actions/download-artifact@v4
+        with: 
+          name: be-build
+          path: be-package
+
+      - name: azure-login-w-oidc
+        uses: azure/login@v2
+        with: 
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: deploy-be-to-staging-slot
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.BACKEND_APP_NAME }}
+          slot-name: ${{ env.BACKEND_SLOT_NAME }}
+          package: be-package
+
+      - name: Swap-staging-to-Production
+        uses: azure/cli@v2
+        with:
+          inlineScript: | 
+            az webapp deployment slot swap \
+              --resource-group "${{ env.RESOURCE_GROUP }}" \
+              --name "${{ env.BACKEND_APP_NAME }}" \
+              --slot "${{ env.BACKEND_SLOT_NAME }}" \
+              --target-slot production 
+
+
