@@ -12,12 +12,12 @@ app.use(cors({  origin: process.env.CLIENT_ORIGIN || '*' }));
 app.get('/api/health', (req, res)=>{ res.json({ status: 'ok' }); });
 
 // serve react build
-const clientBuildPath = path.join(__dirname, '../client/dist');
+const clientBuildPath = path.join(__dirname, 'dist');
 
 app.use(express.static(clientBuildPath));
 
 app.get('*', (req, res)=> {
-    res.sendFile(path.join(clientBuildPath, 'index.hmtl'));
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
 const port = process.env.PORT || 8080;
