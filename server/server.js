@@ -4,6 +4,9 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+console.log('typeof connectDB:', typeof connectDB);
+console.log('connectDB value:', connectDB);
+
 const app = express();
 connectDB();
 
