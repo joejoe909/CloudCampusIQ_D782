@@ -35,7 +35,7 @@ jobs:
 
       - name: prepare-to-deploy
         run: |
-          mkdir deploy
+          mkdir -p deploy
           cp -R server/* deploy/
           cp -R client/dist deploy/dist
          

@@ -1,12 +1,11 @@
 const express = require('express');
 const connectDB = require('./config/db');
-connectDB();
 const cors = require('cors');
 const path = require('path');
-const { connect } = require('http2');
 require('dotenv').config();
 
 const app = express();
+connectDB();
 
 app.use(express.json());
 
@@ -29,5 +28,5 @@ app.listen(port, ()=> { console.log(`Server listening on port ${port}` ); });
 
 app.use((err, req, res, next) =>{ 
     console.error(err.stack);
-    res.stats(500).json({ error: 'error in server/server.js'})
+    res.status(500).json({ error: 'error in server/server.js'})
 })
