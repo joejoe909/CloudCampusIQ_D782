@@ -11,7 +11,11 @@ const distPath = path.join(__dirname, 'dist');
 
 app.use(express.static(distPath));
 
-app.get(origin: process.env.CLIENT_ORIGIN, (req, res) => {
+app.get('/api/health', (req, res)=> {
+    res.json({ status: 'ok'});
+});
+
+app.get('/{*spat}', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
 });
 
