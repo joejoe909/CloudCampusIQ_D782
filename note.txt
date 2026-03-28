@@ -1,0 +1,33 @@
+connect ECONNREFUSED 127.0.0.1:2701
+    at _handleConnectionErrors (path\CloudCampusIQ\server\node_modules\mongoose\lib\connection.js:1169:11)
+    at NativeConnection.openUri (path\CloudCampusIQ\server\node_modules\mongoose\lib\connection.js:1100:11)
+    at async seed (path\CloudCampusIQ\server\seed.js:6:3) {
+  errorLabelSet: Set(0) {},
+  reason: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) { '127.0.0.1:2701' => [ServerDescription] },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: null,
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  },
+  code: undefined,
+  cause: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) { '127.0.0.1:2701' => [ServerDescription] },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: null,
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  }
+}

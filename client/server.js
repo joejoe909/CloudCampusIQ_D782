@@ -15,7 +15,7 @@ app.get('/api/health', (req, res)=> {
     res.json({ status: 'ok'});
 });
 
-app.get('/{*spat}', (req, res) => {
+app.get('/{*splat}', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
 });
 
